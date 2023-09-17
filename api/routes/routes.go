@@ -1,24 +1,33 @@
 package routes
 
 import (
-	"golang-api/api/handlers"
+	"golang-api/api/controller"
 	"golang-api/config"
+	"net/http"
 
-	"github.com/gin-gonic/gin"
+	"github.com/gorilla/mux"
 )
 
-func StartServer() {
+func SetupRoutes() *mux.Router {
+	r := mux.NewRouter()
+
+	// Rute untuk handler CreateUser, UpdateUser, dan DeleteUser
+	r.HandleFunc("/api/user/Register", controller.Register).Methods("POST")
+	r.HandleFunc("/api/user/LoginUser", controller.LoginUser).Methods("POST")
+	r.HandleFunc("/api/user/Update", controller.UpdateUser).Methods("PUT")
+	r.HandleFunc("/api/user/Delete", controller.DeleteUser).Methods("DELETE")
+
+	// Rute untuk handler GetUser dengan variabel ID
+	r.HandleFunc("/api/user/GetUser/{id}", controller.GetUser).Methods("GET")
+
+	return r
+}
+
+func RunServer() {
 	config.InitDB()
-	// Create a Gin router
-	router := gin.Default()
+	router := SetupRoutes()
 
-	// Define your routes and associate them with handlers
-	router.POST("/api/user/Register", handlers.CreateUser)
-	router.POST("/api/user/LoginUser", handlers.LoginUser)
-	router.POST("/api/user/UpdateUser", handlers.UpdateUser)
-	router.POST("/api/user/DeleteUser", handlers.DeleteUser)
-	router.GET("/api/user/GetUser", handlers.GetUser)
-
-	// Mulai server HTTP
-	router.Run(":9000")
+	// Mulai server HTTP dengan router yang telah dikonfigurasi
+	http.Handle("/", router)
+	http.ListenAndServe(":9000", nil)
 }

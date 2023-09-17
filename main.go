@@ -7,5 +7,5 @@ import (
 
 func main() {
 	fmt.Println("server start on port 9000")
-	routes.StartServer()
+	routes.RunServer()
 }
